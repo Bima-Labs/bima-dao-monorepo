@@ -45,6 +45,6 @@ onMounted(() => initWhiteLabel());
     <LayoutSplash v-if="!whiteLabelResolved" />
     <LayoutSite v-else-if="routeName === 'site'" />
     <LayoutApp v-else />
-    <AppFooter />
+     <!-- <AppFooter />  -->
   </div>
 </template>

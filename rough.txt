@@ -1,0 +1,22 @@
+Absolutely! Here's a very short summary of our changes, suitable for your Pull Request description:
+
+### Planner Agent:
+I've summarized the key changes into concise points for your PR:
+
+### Summary of Changes:
+*   **Top Navigation Redesign:**
+    *   Implemented Bima logo, "Home", and "Explore" links in the top navigation for `/my` routes.
+    *   Moved the "Notifications" icon with unread count to the top navigation for `/my` routes.
+    *   Added "Overview", "Proposals", and "Leaderboard" links to the top navigation for `/space` routes.
+    *   Ensured Bima logo appears on the top navigation for `bima.eth` space pages.
+*   **Sidebar Enhancements:**
+    *   Filtered followed spaces in the sidebar to display only "bima.eth".
+*   **Home Page (My/Home.vue) Transformation:**
+    *   Redesigned `My/Home.vue` into a dedicated "Bima DAO Governance" landing page.
+    *   Incorporated dynamic space statistics (followers, proposals) from `bima.eth`.
+    *   Applied a new orange-themed hero background with gradient overlay for a visually appealing UI.
+    *   Removed the onboarding user section and old proposal list/filters.
+*   **General:**
+    *   Commented out `OnboardingUser` component from `My/Home.vue` and `My/Explore.vue`.
+
+These changes significantly enhance the application's navigation and provide a new, engaging landing experience for Bima DAO.
