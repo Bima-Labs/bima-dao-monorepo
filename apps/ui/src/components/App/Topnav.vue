@@ -148,6 +148,13 @@ onUnmounted(() => {
         <BimaLogo class="h-5 w-auto text-black" />
       </AppLink>
 
+      <!-- Added: Home link for space views -->
+      <AppLink :to="{ name: 'my-home' }"
+               class="text-skin-link text-[19px] font-medium"
+               :class="{'font-semibold': route.name === 'my-home'}">
+        Home
+      </AppLink>
+
       <AppLink
         :to="{ name: 'space-overview', params: { space: route.params.space } }"
         class="text-skin-link text-[19px] font-medium"
