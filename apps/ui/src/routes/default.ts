@@ -37,6 +37,19 @@ export default [
     path: '/:space',
     name: 'space',
     component: Space,
+    beforeEnter: (to, from, next) => {
+      const space = String(to.params.space);
+      if (space.startsWith('s-tn:')) {
+        const spacename = space.substring(5);
+        if (spacename === 'bima' || spacename === 'bima.eth') {
+          next();
+        } else {
+          next({ name: 'site-landing' });
+        }
+      } else {
+        next();
+      }
+    },
     children: spaceChildrenRoutes
   },
 

@@ -4,6 +4,13 @@ const { modalAccountWithoutDismissOpen } = useModal();
 const { web3 } = useWeb3();
 const { setTitle } = useTitle();
 
+const filteredNotifications = computed(() =>
+  notificationsStore.notifications.filter(notification => {
+    const spaceId = notification.proposal.space.id.toLowerCase();
+    return spaceId.includes('bima') || spaceId.includes('bima.eth');
+  })
+);
+
 watchEffect(async () => {
   setTitle(
     `Notifications${notificationsStore.unreadNotificationsCount ? ` (${notificationsStore.unreadNotificationsCount} unread)` : ''}`
@@ -37,9 +44,9 @@ onUnmounted(() => notificationsStore.markAllAsRead());
   <div>
     <UiLabel :label="'Notifications'" sticky />
     <UiLoading v-if="notificationsStore.loading" class="block px-4 py-3" />
-    <div v-else-if="notificationsStore.notifications.length">
+    <div v-else-if="filteredNotifications.length">
       <div
-        v-for="(notification, i) in notificationsStore.notifications"
+        v-for="(notification, i) in filteredNotifications"
         :key="i"
       >
         <div

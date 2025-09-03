@@ -139,7 +139,21 @@ watch(
     category.value = isValidCategory(categoryQuery)
       ? categoryQuery
       : DEFAULT_CATEGORY;
-    searchQuery.value = searchQueryValue ? searchQueryValue : undefined;
+
+    const baseQuery = searchQueryValue || '';
+    const bimaQuery = 'bima';
+
+    let finalQuery = '';
+    if (baseQuery) {
+      if (!baseQuery.toLowerCase().includes(bimaQuery)) {
+        finalQuery = `${baseQuery} ${bimaQuery}`;
+      } else {
+        finalQuery = baseQuery;
+      }
+    } else {
+      finalQuery = bimaQuery;
+    }
+    searchQuery.value = finalQuery;
   },
   {
     immediate: true
