@@ -176,20 +176,20 @@ router.afterEach(() => {
       class="flex min-h-screen maximum:border-r"
       :class="{ 'maximum:border-l': isWhiteLabel }"
     >
-      <AppBottomNav
+      <!-- <AppBottomNav
         v-if="web3.account && !isWhiteLabel"
         :class="[
           `fixed bottom-0 inset-x-0 hidden app-bottom-nav z-[100]`,
           { 'app-bottom-nav-open': uiStore.sideMenuOpen }
         ]"
-      />
-      <AppSidebar
+      /> -->
+      <!-- <AppSidebar
         v-if="hasSidebar"
         :class="[
           `hidden lg:flex app-sidebar fixed inset-y-0`,
           { '!flex app-sidebar-open': uiStore.sideMenuOpen }
         ]"
-      />
+      /> -->
       <AppTopnav
         :has-app-nav="hasAppNav"
         :class="{ hidden: !hasTopNav, 'maximum:border-l': isWhiteLabel }"
@@ -207,7 +207,7 @@ router.afterEach(() => {
           </button>
         </template>
       </AppTopnav>
-      <AppNav
+      <!-- <AppNav
         v-if="hasAppNav"
         :class="[
           'top-[72px] inset-y-0 z-10 hidden lg:block fixed app-nav',
@@ -215,7 +215,7 @@ router.afterEach(() => {
             '!block app-nav-open': uiStore.sideMenuOpen
           }
         ]"
-      />
+      /> -->
       <button
         v-if="uiStore.sideMenuOpen"
         type="button"
@@ -226,10 +226,10 @@ router.afterEach(() => {
         <div class="flex-auto w-0" :class="{ 'mt-[72px]': hasTopNav }">
           <router-view class="h-full pb-10" />
         </div>
-        <div
+        <!-- <div
           v-if="hasPlaceHolderSidebar"
           class="app-placeholder-sidebar hidden xl:block"
-        />
+        /> -->
       </main>
     </div>
     <AppNotifications />
