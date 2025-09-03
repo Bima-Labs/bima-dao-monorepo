@@ -94,6 +94,14 @@ const networks = computed(() => {
   return [{ id: 'eth', name: 'Ethereum' }, ...protocolNetworks];
 });
 
+// Computed property to filter spaces for 'bima.eth'
+const filteredSpaces = computed(() => {
+  if (!data.value) return [];
+  // Flatten all pages and filter to only include 'bima.eth'
+  return data.value.pages.flat().filter(space => space.id === 'bima.eth');
+});
+
+
 function isValidNetwork(network: string): network is string {
   return network === 'all' || networks.value.some(n => n.id === network);
 }
@@ -200,13 +208,13 @@ watchEffect(() => setTitle('Explore'));
       <UiLoading v-if="isPending" class="block m-4" />
       <div v-else-if="data">
         <UiContainerInfiniteScroll
-          v-if="data.pages.flat().length"
+          v-if="filteredSpaces.length"
           :loading-more="isFetchingNextPage"
           class="justify-center max-w-screen-md 2xl:max-w-screen-xl 3xl:max-w-screen-2xl mx-auto p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-explore-3 2xl:grid-cols-explore-4 3xl:grid-cols-explore-5 gap-3"
           @end-reached="handleEndReached"
         >
           <SpacesListItem
-            v-for="space in data.pages.flat()"
+            v-for="space in filteredSpaces"
             :key="space.id"
             :space="space"
           />
@@ -240,3 +248,4 @@ watchEffect(() => setTitle('Explore'));
     </UiToolbarBottom>
   </div>
 </template>
+
