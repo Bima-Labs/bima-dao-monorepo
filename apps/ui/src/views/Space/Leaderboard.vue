@@ -89,7 +89,7 @@ watchEffect(() => setTitle(`Leaderboard - ${props.space.name}`));
 </script>
 
 <template>
-  <div>
+  <div class="w-4/5 mx-auto">
     <UiLabel label="Leaderboard" sticky />
     <div
       class="bg-skin-bg sticky top-[112px] lg:top-[113px] z-40 border-b w-full flex font-medium space-x-1"

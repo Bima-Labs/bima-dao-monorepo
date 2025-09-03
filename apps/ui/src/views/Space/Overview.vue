@@ -34,7 +34,7 @@ watchEffect(() => setTitle(props.space.name));
 </script>
 
 <template>
-  <div>
+  <div class="w-4/5 mx-auto">
     <div
       class="relative h-[156px] md:h-[140px] mb-[-86px] md:mb-[-70px] top-[-1px]"
     >
