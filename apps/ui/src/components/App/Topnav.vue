@@ -128,7 +128,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <UiTopnav v-bind="$attrs" class="w-[90%] mx-auto rounded-2xl overflow-hidden">
+  <UiTopnav v-bind="$attrs" class="w-[90%] mx-auto rounded-3xl overflow-hidden border shadow-lg">
     <!-- Conditional content for 'my' route - Bima logo and navigation links -->
     <div v-if="isMyRootRoute" class="flex items-center h-full truncate px-4 space-x-6">
       <AppLink :to="{ name: 'my-home' }" class="flex items-center space-x-2.5">
