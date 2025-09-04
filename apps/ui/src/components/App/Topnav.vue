@@ -190,9 +190,16 @@ onUnmounted(() => {
       >
         <IH-user-group class="inline-block mr-2" /> Leaderboard
       </AppLink>
-      <!-- Modified: Disabled Docs link for 'space' root route, hidden on 'space-overview' -->
-      <AppLink v-if="route.name !== 'space-overview'" to="#"
-               class="text-skin-link text-[19px] font-medium pointer-events-none opacity-50 cursor-not-allowed">
+      <!-- Modified: Disabled Docs link for 'space' root route, now hidden on 'overview', 'proposals', and 'leaderboard' -->
+      <AppLink
+        v-if="
+          route.name !== 'space-overview' &&
+          route.name !== 'space-proposals' &&
+          route.name !== 'space-leaderboard'
+        "
+        to="#"
+        class="text-skin-link text-[19px] font-medium pointer-events-none opacity-50 cursor-not-allowed"
+      >
         <IHDocumentText class="inline-block mr-2" /> Docs
       </AppLink>
     </div>
