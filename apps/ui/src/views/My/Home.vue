@@ -102,16 +102,19 @@ const {
     </p>
 
     <div class="flex justify-center space-x-4 mb-12">
-      <UiButton class="primary" :to="{ name: 'space-proposals', params: { space: BIMA_SPACE_KEY } }">
+      <!-- Changed "View Proposals" button to orange, retaining white text -->
+      <UiButton style="background-color: #ec701a; color: white;" :to="{ name: 'space-proposals', params: { space: BIMA_SPACE_KEY } }">
         <IHSparkles class="inline-block mr-2" /> View Proposals
       </UiButton>
+      <!-- Reverted "Create Proposal" button to default white background, black text as per image -->
       <UiButton :to="{ name: 'space-editor', params: { space: BIMA_SPACE_KEY, key: 'new' } }">
         <IHPlusSm class="inline-block mr-2" /> Create Proposal
       </UiButton>
     </div>
 
-    <div v-if="bimaSpace" class="bg-white rounded-xl shadow p-6 border border-skin-border">
-      <div class="flex items-center mb-6">
+    <!-- Modified: Removed outer card classes and added top margin for spacing -->
+    <div v-if="bimaSpace" class="mt-8">
+      <div class="flex items-center justify-center mb-6">
         <BimaLogo class="h-8 w-auto mr-3 text-black" />
         <div>
           <h2 class="text-2xl font-semibold">Bima DAO</h2>
@@ -119,28 +122,25 @@ const {
         </div>
       </div>
 
+      <!-- Stat cards grid, still centered -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-6">
-        <div>
-          <p class="text-3xl font-bold">{{ _n(bimaSpace.follower_count || 2847) }}</p> <!-- Use space data or fallback -->
+        <div class="bg-white rounded-xl shadow p-4 border border-skin-border flex flex-col justify-center items-center">
+          <p class="text-3xl font-bold" style="color: #ec701a;">{{ _n(bimaSpace.follower_count || 2847) }}</p> <!-- Use space data or fallback -->
           <p class="text-sm text-gray-500">Members (Static)</p>
         </div>
-        <div>
-          <p class="text-3xl font-bold">{{ _n(bimaSpace.active_proposals || 0) }}</p> <!-- Use space data or fallback -->
+        <div class="bg-white rounded-xl shadow p-4 border border-skin-border flex flex-col justify-center items-center">
+          <p class="text-3xl font-bold" style="color: #ec701a;">{{ _n(bimaSpace.active_proposals || 0) }}</p> <!-- Use space data or fallback -->
           <p class="text-sm text-gray-500">Active Proposals</p>
         </div>
-        <div>
-          <p class="text-3xl font-bold">{{ _n(bimaSpace.proposal_count || 15) }}</p> <!-- Use space data or fallback -->
+        <div class="bg-white rounded-xl shadow p-4 border border-skin-border flex flex-col justify-center items-center">
+          <p class="text-3xl font-bold" style="color: #ec701a;">{{ _n(bimaSpace.proposal_count || 15) }}</p> <!-- Use space data or fallback -->
           <p class="text-sm text-gray-500">Total Proposals</p>
         </div>
-        <div>
-          <p class="text-3xl font-bold">$2.4M</p> <!-- Hardcoded as per image -->
+        <div class="bg-white rounded-xl shadow p-4 border border-skin-border flex flex-col justify-center items-center">
+          <p class="text-3xl font-bold" style="color: #ec701a;">$2.4M</p> <!-- Hardcoded as per image -->
           <p class="text-sm text-gray-500">Treasury (Static)</p>
         </div>
       </div>
-
-      <UiButton class="primary w-full" :to="{ name: 'space-overview', params: { space: BIMA_SPACE_KEY } }">
-        <IHDocumentText class="inline-block mr-2" /> Enter Governance Portal
-      </UiButton>
     </div>
     <UiLoading v-else-if="isSpaceLoading" class="mt-8" />
     <UiAlert v-else-if="isSpaceError" type="error" class="mt-8">
@@ -148,3 +148,4 @@ const {
     </UiAlert>
   </div>
 </template>
+
