@@ -53,7 +53,14 @@ router.beforeEach((to, _from, next) => {
     // if space has alias, change url to it
     spaceName = aliases[spaceName] || spaceName;
     const restPath = rest.length ? `/${rest.join('/')}` : '';
-    redirectPath = `/${metadataNetwork}:${spaceName}${restPath}`;
+
+    // If the space is not 'bima.eth', redirect to 'bima.eth'
+    if (spaceName && spaceName !== 'bima.eth') {
+      redirectPath = `/${metadataNetwork}:bima.eth${restPath}`;
+    } else {
+      // Original logic for space-related paths if no specific 'bima.eth' redirect is needed
+      redirectPath = `/${metadataNetwork}:${spaceName}${restPath}`;
+    }
   }
 
   // Match and redirect paths like "/delegate/safe.eth" to "/s:safe.eth/delegates"
