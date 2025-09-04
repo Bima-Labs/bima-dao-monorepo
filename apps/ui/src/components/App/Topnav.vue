@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'; // Ensure 'computed' is imported
+import { computed, onMounted } from 'vue';
 import { getCacheHash, shorten } from '@/helpers/utils';
 import { Connector } from '@/networks/types';
 import BimaLogo from '@/components/App/BimaLogo.vue';
@@ -7,7 +7,8 @@ import IHBell from '~icons/heroicons-outline/bell';
 import IHGlobeAlt from '~icons/heroicons-outline/globe-alt'; // Import GlobeAlt icon for Overview
 import IHNewspaper from '~icons/heroicons-outline/newspaper'; // Import Newspaper icon for Proposals
 import IHUserGroup from '~icons/heroicons-outline/user-group'; // Import UserGroup icon for Leaderboard
-import IHDocumentText from '~icons/heroicons-outline/document-text'; // New: Import DocumentText icon for Docs link
+import IHDocumentText from '~icons/heroicons-outline/document-text'; // Import DocumentText icon for Docs link
+import IHLink from '~icons/heroicons-outline/link'; // New: Import Link icon for Connect Wallet button
 import { metadataNetwork } from '@/networks'; // Ensure metadataNetwork is imported
 
 
@@ -44,7 +45,7 @@ const loading = ref(false);
 const searchInput = ref();
 const searchValue = ref('');
 
-// New: Define Bima space key for use in navigation
+// Define Bima space key for use in navigation
 const BIMA_ETH_SPACE_ID = 'bima.eth'; // Assuming 'bima.eth' is the ID part of the space key
 const BIMA_SPACE_KEY = computed(() => `${metadataNetwork}:${BIMA_ETH_SPACE_ID}`);
 
@@ -80,7 +81,7 @@ const isMyRootRoute = computed(() => route.matched[0]?.name === 'my');
 // Computed property to determine if the root route is 'space'
 const isSpaceRootRoute = computed(() => route.matched[0]?.name === 'space' && route.name !== 'space-settings');
 
-// New: Computed property to check if the current space is 'bima.eth'
+// Computed property to check if the current space is 'bima.eth'
 const isCurrentSpaceBimaEth = computed(() => {
   const spaceParam = route.params.space as string | undefined;
   return isSpaceRootRoute.value && spaceParam?.endsWith(':bima.eth');
@@ -234,8 +235,6 @@ onUnmounted(() => {
     </form>
 
     <div class="flex space-x-2 shrink-0">
-      <!-- Removed: The old conditional "Enter Governance Portal" button -->
-
       <!-- Notifications button -->
       <UiButton
         v-if="web3.account"
@@ -252,9 +251,9 @@ onUnmounted(() => {
         </div>
       </UiButton>
 
-      <!-- Modified: This block now handles both logged-in account display AND the new 'Enter Governance Portal' button -->
       <UiButton v-if="loading || web3.authLoading" loading />
       <template v-else>
+        <!-- Display user account info if logged in -->
         <UiButton
           v-if="web3.account"
           class="float-left !px-0 w-[46px] sm:w-auto sm:!px-3 text-center"
@@ -268,8 +267,18 @@ onUnmounted(() => {
             />
           </span>
         </UiButton>
+        <!-- Display "Connect Wallet" button when not logged in AND on Bima DAO overview page -->
         <UiButton
-          v-else
+          v-else-if="!web3.account && isCurrentSpaceBimaEth && route.name === 'space-overview'"
+          style="background-color: #ec701a; color: white;"
+          class="!px-3 sm:!px-4"
+          @click="modalAccountOpen = true"
+        >
+          <IHLink class="inline-block mr-2" /> Connect Wallet
+        </UiButton>
+        <!-- Display "Enter Governance Portal" button when not logged in AND NOT on Bima DAO overview page -->
+        <UiButton
+          v-else-if="!web3.account"
           style="background-color: #ec701a; color: white;"
           class="!px-3 sm:!px-4"
           :to="{ name: 'space-overview', params: { space: BIMA_SPACE_KEY } }"
