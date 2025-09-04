@@ -128,19 +128,23 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <UiTopnav v-bind="$attrs">
+  <UiTopnav v-bind="$attrs" class="w-[90%] mx-auto rounded-2xl overflow-hidden">
     <!-- Conditional content for 'my' route - Bima logo and navigation links -->
     <div v-if="isMyRootRoute" class="flex items-center h-full truncate px-4 space-x-6">
       <AppLink :to="{ name: 'my-home' }" class="flex items-center space-x-2.5">
         <!-- Modified: Logo height changed to h-4 -->
         <BimaLogo class="h-4 w-auto text-black" />
       </AppLink>
-      <AppLink :to="{ name: 'my-home' }"
+      <!-- Modified: Hidden on landing page -->
+      <AppLink v-if="route.name !== 'my-home'"
+               :to="{ name: 'my-home' }"
                class="text-skin-link text-[19px] font-medium"
                :class="{'font-semibold': route.name === 'my-home'}">
         Home
       </AppLink>
-      <AppLink :to="{ name: 'my-explore' }"
+      <!-- Modified: Hidden on landing page -->
+      <AppLink v-if="route.name !== 'my-home'"
+               :to="{ name: 'my-explore' }"
                class="text-skin-link text-[19px] font-medium"
                :class="{'font-semibold': route.name === 'my-explore'}">
         Explore
@@ -171,24 +175,39 @@ onUnmounted(() => {
         Home
       </AppLink>
 
+      <!-- Modified: Highlight with orange box when selected -->
       <AppLink
         :to="{ name: 'space-overview', params: { space: route.params.space } }"
-        class="text-skin-link text-[19px] font-medium"
-        :class="{'font-semibold': route.name === 'space-overview'}"
+        :class="[
+          'text-[19px] font-medium transition-colors duration-200 ease-in-out',
+          route.name === 'space-overview'
+            ? 'bg-orange-500 text-white px-3 py-1 rounded-lg'
+            : 'text-skin-link'
+        ]"
       >
         <IH-globe-alt class="inline-block mr-2" /> Overview
       </AppLink>
+      <!-- Modified: Highlight with orange box when selected -->
       <AppLink
         :to="{ name: 'space-proposals', params: { space: route.params.space } }"
-        class="text-skin-link text-[19px] font-medium"
-        :class="{'font-semibold': route.name === 'space-proposals'}"
+        :class="[
+          'text-[19px] font-medium transition-colors duration-200 ease-in-out',
+          route.name === 'space-proposals'
+            ? 'bg-orange-500 text-white px-3 py-1 rounded-lg'
+            : 'text-skin-link'
+        ]"
       >
         <IH-newspaper class="inline-block mr-2" /> Proposals
       </AppLink>
+      <!-- Modified: Highlight with orange box when selected -->
       <AppLink
         :to="{ name: 'space-leaderboard', params: { space: route.params.space } }"
-        class="text-skin-link text-[19px] font-medium"
-        :class="{'font-semibold': route.name === 'space-leaderboard'}"
+        :class="[
+          'text-[19px] font-medium transition-colors duration-200 ease-in-out',
+          route.name === 'space-leaderboard'
+            ? 'bg-orange-500 text-white px-3 py-1 rounded-lg'
+            : 'text-skin-link'
+        ]"
       >
         <IH-user-group class="inline-block mr-2" /> Leaderboard
       </AppLink>
@@ -293,7 +312,7 @@ onUnmounted(() => {
           class="!px-3 sm:!px-4"
           :to="{ name: 'space-overview', params: { space: BIMA_SPACE_KEY } }"
         >
-          <IHDocumentText class="inline-block mr-2" /> Enter Governance Portal
+          <IHDocumentText class="inline-block mr-2" />Governance Portal
         </UiButton>
       </template>
 
@@ -323,4 +342,3 @@ onUnmounted(() => {
   color: rgba(var(--link));
 }
 </style>
-
