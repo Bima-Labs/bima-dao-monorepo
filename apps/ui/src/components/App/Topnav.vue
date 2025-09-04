@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed, onMounted } from 'vue'; // Ensure 'computed' is imported
 import { getCacheHash, shorten } from '@/helpers/utils';
 import { Connector } from '@/networks/types';
 import BimaLogo from '@/components/App/BimaLogo.vue';
@@ -6,6 +7,8 @@ import IHBell from '~icons/heroicons-outline/bell';
 import IHGlobeAlt from '~icons/heroicons-outline/globe-alt'; // Import GlobeAlt icon for Overview
 import IHNewspaper from '~icons/heroicons-outline/newspaper'; // Import Newspaper icon for Proposals
 import IHUserGroup from '~icons/heroicons-outline/user-group'; // Import UserGroup icon for Leaderboard
+import IHDocumentText from '~icons/heroicons-outline/document-text'; // New: Import DocumentText icon for Docs link
+import { metadataNetwork } from '@/networks'; // Ensure metadataNetwork is imported
 
 
 defineProps<{
@@ -40,6 +43,11 @@ const SEARCH_CONFIG = {
 const loading = ref(false);
 const searchInput = ref();
 const searchValue = ref('');
+
+// New: Define Bima space key for use in navigation
+const BIMA_ETH_SPACE_ID = 'bima.eth'; // Assuming 'bima.eth' is the ID part of the space key
+const BIMA_SPACE_KEY = computed(() => `${metadataNetwork}:${BIMA_ETH_SPACE_ID}`);
+
 
 const user = computed(
   () =>
@@ -135,11 +143,16 @@ onUnmounted(() => {
                :class="{'font-semibold': route.name === 'my-explore'}">
         Explore
       </AppLink>
+      <!-- Disabled Docs link for 'my' root route -->
+      <AppLink to="#"
+               class="text-skin-link text-[19px] font-medium pointer-events-none opacity-50 cursor-not-allowed">
+        <IHDocumentText class="inline-block mr-2" /> Docs
+      </AppLink>
     </div>
 
     <!-- Conditional content for 'space' route - Space-specific navigation links -->
     <div v-else-if="isSpaceRootRoute" class="flex items-center h-full truncate px-4 space-x-6">
-      <!-- New: Display BimaLogo if the current space is 'bima.eth' -->
+      <!-- Display BimaLogo if the current space is 'bima.eth' -->
       <AppLink
         v-if="isCurrentSpaceBimaEth"
         :to="{ name: 'space-overview', params: { space: route.params.space } }"
@@ -175,6 +188,11 @@ onUnmounted(() => {
         :class="{'font-semibold': route.name === 'space-leaderboard'}"
       >
         <IH-user-group class="inline-block mr-2" /> Leaderboard
+      </AppLink>
+      <!-- Disabled Docs link for 'space' root route -->
+      <AppLink to="#"
+               class="text-skin-link text-[19px] font-medium pointer-events-none opacity-50 cursor-not-allowed">
+        <IHDocumentText class="inline-block mr-2" /> Docs
       </AppLink>
     </div>
 
@@ -216,6 +234,8 @@ onUnmounted(() => {
     </form>
 
     <div class="flex space-x-2 shrink-0">
+      <!-- Removed: The old conditional "Enter Governance Portal" button -->
+
       <!-- Notifications button -->
       <UiButton
         v-if="web3.account"
@@ -232,24 +252,32 @@ onUnmounted(() => {
         </div>
       </UiButton>
 
+      <!-- Modified: This block now handles both logged-in account display AND the new 'Enter Governance Portal' button -->
       <UiButton v-if="loading || web3.authLoading" loading />
-      <UiButton
-        v-else
-        class="float-left !px-0 w-[46px] sm:w-auto sm:!px-3 text-center"
-        @click="modalAccountOpen = true"
-      >
-        <span v-if="web3.account" class="sm:flex items-center space-x-2">
-          <UiStamp :id="user.id" :size="18" :cb="cb" />
-          <span
-            class="hidden sm:block truncate max-w-[120px]"
-            v-text="user.name || shorten(user.id)"
-          />
-        </span>
-        <template v-else>
-          <span class="hidden sm:block" v-text="'Log in'" />
-          <IH-login class="sm:hidden inline-block" />
-        </template>
-      </UiButton>
+      <template v-else>
+        <UiButton
+          v-if="web3.account"
+          class="float-left !px-0 w-[46px] sm:w-auto sm:!px-3 text-center"
+          @click="modalAccountOpen = true"
+        >
+          <span class="sm:flex items-center space-x-2">
+            <UiStamp :id="user.id" :size="18" :cb="cb" />
+            <span
+              class="hidden sm:block truncate max-w-[120px]"
+              v-text="user.name || shorten(user.id)"
+            />
+          </span>
+        </UiButton>
+        <UiButton
+          v-else
+          style="background-color: #ec701a; color: white;"
+          class="!px-3 sm:!px-4"
+          :to="{ name: 'space-overview', params: { space: BIMA_SPACE_KEY } }"
+        >
+          <IHDocumentText class="inline-block mr-2" /> Enter Governance Portal
+        </UiButton>
+      </template>
+
       <IndicatorPendingTransactions />
       <UiButton
         v-if="!isWhiteLabel"
@@ -276,3 +304,4 @@ onUnmounted(() => {
   color: rgba(var(--link));
 }
 </style>
+
