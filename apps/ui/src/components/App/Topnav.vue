@@ -8,7 +8,7 @@ import IHGlobeAlt from '~icons/heroicons-outline/globe-alt'; // Import GlobeAlt 
 import IHNewspaper from '~icons/heroicons-outline/newspaper'; // Import Newspaper icon for Proposals
 import IHUserGroup from '~icons/heroicons-outline/user-group'; // Import UserGroup icon for Leaderboard
 import IHDocumentText from '~icons/heroicons-outline/document-text'; // Import DocumentText icon for Docs link
-import IHLink from '~icons/heroicons-outline/link'; // New: Import Link icon for Connect Wallet button
+import IHLink from '~icons/heroicons-outline/link'; // Import Link icon for Connect Wallet button
 import { metadataNetwork } from '@/networks'; // Ensure metadataNetwork is imported
 
 
@@ -190,7 +190,7 @@ onUnmounted(() => {
       >
         <IH-user-group class="inline-block mr-2" /> Leaderboard
       </AppLink>
-      <!-- Modified: Disabled Docs link for 'space' root route, now hidden on 'overview', 'proposals', and 'leaderboard' -->
+      <!-- Disabled Docs link for 'space' root route, hidden on 'overview', 'proposals', and 'leaderboard' -->
       <AppLink
         v-if="
           route.name !== 'space-overview' &&
@@ -260,9 +260,10 @@ onUnmounted(() => {
 
       <UiButton v-if="loading || web3.authLoading" loading />
       <template v-else>
-        <!-- Display user account info if logged in -->
+        <!-- Modified: Display user account info if logged in with orange background and white text -->
         <UiButton
           v-if="web3.account"
+          style="background-color: #ec701a; color: white;"
           class="float-left !px-0 w-[46px] sm:w-auto sm:!px-3 text-center"
           @click="modalAccountOpen = true"
         >
