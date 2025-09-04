@@ -9,6 +9,7 @@ import IHNewspaper from '~icons/heroicons-outline/newspaper'; // Import Newspape
 import IHUserGroup from '~icons/heroicons-outline/user-group'; // Import UserGroup icon for Leaderboard
 import IHDocumentText from '~icons/heroicons-outline/document-text'; // Import DocumentText icon for Docs link
 import IHLink from '~icons/heroicons-outline/link'; // Import Link icon for Connect Wallet button
+import IHHome from '~icons/heroicons-outline/home'; // Import Home icon for the Home link
 import { metadataNetwork } from '@/networks'; // Ensure metadataNetwork is imported
 
 
@@ -168,11 +169,11 @@ onUnmounted(() => {
         <BimaLogo class="h-4 w-auto text-black" />
       </AppLink>
 
-      <!-- Added: Home link for space views -->
+      <!-- Added: Home link for space views with icon -->
       <AppLink :to="{ name: 'my-home' }"
                class="text-skin-link text-[19px] font-medium"
                :class="{'font-semibold': route.name === 'my-home'}">
-        Home
+        <IHHome class="inline-block mr-2" /> Home
       </AppLink>
 
       <!-- Modified: Highlight with orange box when selected -->
@@ -296,16 +297,20 @@ onUnmounted(() => {
             />
           </span>
         </UiButton>
-        <!-- Display "Connect Wallet" button when not logged in AND on Bima DAO overview page -->
+        <!-- Modified: Display "Connect Wallet" button when not logged in AND on Bima DAO overview, proposals, or leaderboard pages -->
         <UiButton
-          v-else-if="!web3.account && isCurrentSpaceBimaEth && route.name === 'space-overview'"
+          v-else-if="
+            !web3.account &&
+            isCurrentSpaceBimaEth &&
+            ['space-overview', 'space-proposals', 'space-leaderboard'].includes(route.name as string)
+          "
           style="background-color: #ec701a; color: white;"
           class="!px-3 sm:!px-4"
           @click="modalAccountOpen = true"
         >
           <IHLink class="inline-block mr-2" /> Connect Wallet
         </UiButton>
-        <!-- Display "Enter Governance Portal" button when not logged in AND NOT on Bima DAO overview page -->
+        <!-- Display "Enter Governance Portal" button when not logged in AND NOT on Bima DAO overview, proposals, or leaderboard pages -->
         <UiButton
           v-else-if="!web3.account"
           style="background-color: #ec701a; color: white;"
