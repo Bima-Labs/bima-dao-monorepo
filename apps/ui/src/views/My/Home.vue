@@ -114,13 +114,7 @@ const {
 
     <!-- Modified: Removed outer card classes and added top margin for spacing -->
     <div v-if="bimaSpace" class="mt-8">
-      <div class="flex items-center justify-center mb-6">
-        <BimaLogo class="h-8 w-auto mr-3 text-black" />
-        <div>
-          <h2 class="text-2xl font-semibold">Bima DAO</h2>
-          <p class="text-md text-gray-600">Sustainable blockchain governance for a greener future</p>
-        </div>
-      </div>
+     
 
       <!-- Stat cards grid, still centered -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-6">
