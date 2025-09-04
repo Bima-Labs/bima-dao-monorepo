@@ -132,7 +132,8 @@ onUnmounted(() => {
     <!-- Conditional content for 'my' route - Bima logo and navigation links -->
     <div v-if="isMyRootRoute" class="flex items-center h-full truncate px-4 space-x-6">
       <AppLink :to="{ name: 'my-home' }" class="flex items-center space-x-2.5">
-        <BimaLogo class="h-5 w-auto text-black" />
+        <!-- Modified: Logo height changed to h-4 -->
+        <BimaLogo class="h-4 w-auto text-black" />
       </AppLink>
       <AppLink :to="{ name: 'my-home' }"
                class="text-skin-link text-[19px] font-medium"
@@ -159,7 +160,8 @@ onUnmounted(() => {
         :to="{ name: 'space-overview', params: { space: route.params.space } }"
         class="flex items-center space-x-2.5 !mr-4"
       >
-        <BimaLogo class="h-5 w-auto text-black" />
+        <!-- Modified: Logo height changed to h-4 -->
+        <BimaLogo class="h-4 w-auto text-black" />
       </AppLink>
 
       <!-- Added: Home link for space views -->
@@ -260,7 +262,7 @@ onUnmounted(() => {
 
       <UiButton v-if="loading || web3.authLoading" loading />
       <template v-else>
-        <!-- Modified: Display user account info if logged in with orange background and white text -->
+        <!-- Display user account info if logged in with orange background and white text -->
         <UiButton
           v-if="web3.account"
           style="background-color: #ec701a; color: white;"
