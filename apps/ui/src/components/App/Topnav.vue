@@ -1,6 +1,17 @@
 <script setup lang="ts">
+import { computed, onMounted } from 'vue';
 import { getCacheHash, shorten } from '@/helpers/utils';
 import { Connector } from '@/networks/types';
+import BimaLogo from '@/components/App/BimaLogo.vue';
+import IHBell from '~icons/heroicons-outline/bell';
+import IHGlobeAlt from '~icons/heroicons-outline/globe-alt'; // Import GlobeAlt icon for Overview
+import IHNewspaper from '~icons/heroicons-outline/newspaper'; // Import Newspaper icon for Proposals
+import IHUserGroup from '~icons/heroicons-outline/user-group'; // Import UserGroup icon for Leaderboard
+import IHDocumentText from '~icons/heroicons-outline/document-text'; // Import DocumentText icon for Docs link
+import IHLink from '~icons/heroicons-outline/link'; // Import Link icon for Connect Wallet button
+import IHHome from '~icons/heroicons-outline/home'; // Import Home icon for the Home link
+import { metadataNetwork } from '@/networks'; // Ensure metadataNetwork is imported
+
 
 defineProps<{
   hasAppNav: boolean;
@@ -15,6 +26,7 @@ const { modalAccountOpen, modalAccountWithoutDismissOpen, resetAccountModal } =
 const { login, web3 } = useWeb3();
 const { toggleTheme, currentTheme } = useTheme();
 const { isWhiteLabel } = useWhiteLabel();
+const notificationsStore = useNotificationsStore();
 
 const SEARCH_CONFIG = {
   space: {
@@ -34,6 +46,11 @@ const loading = ref(false);
 const searchInput = ref();
 const searchValue = ref('');
 
+// Define Bima space key for use in navigation
+const BIMA_ETH_SPACE_ID = 'bima.eth'; // Assuming 'bima.eth' is the ID part of the space key
+const BIMA_SPACE_KEY = computed(() => `${metadataNetwork}:${BIMA_ETH_SPACE_ID}`);
+
+
 const user = computed(
   () =>
     usersStore.getUser(web3.value.account) || {
@@ -49,12 +66,32 @@ const searchConfig = computed(() => {
   const subRootName = route.matched[1]?.name || '';
   const exclusions = SEARCH_CONFIG[rootName]?.exclude || [];
 
+  // Hide search config if we are on a 'my' root route.
+  if (isMyRootRoute.value) return null;
+
   if (SEARCH_CONFIG[rootName] && !exclusions.includes(subRootName)) {
     return SEARCH_CONFIG[rootName];
   }
 
   return null;
 });
+
+// Computed property to determine if the root route is 'my'
+const isMyRootRoute = computed(() => route.matched[0]?.name === 'my');
+
+// Computed property to determine if the root route is 'space'
+const isSpaceRootRoute = computed(() => route.matched[0]?.name === 'space' && route.name !== 'space-settings');
+
+// Computed property to check if the current space is 'bima.eth'
+const isCurrentSpaceBimaEth = computed(() => {
+  const spaceParam = route.params.space as string | undefined;
+  return isSpaceRootRoute.value && spaceParam?.endsWith(':bima.eth');
+});
+
+// Computed property for unread notifications count
+const unreadNotificationsCount = computed(
+  () => notificationsStore.unreadNotificationsCount
+);
 
 async function handleLogin(connector: Connector) {
   resetAccountModal();
@@ -92,8 +129,106 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <UiTopnav v-bind="$attrs">
+  <UiTopnav v-bind="$attrs" class="w-[90%] mx-auto rounded-3xl overflow-hidden border shadow-lg">
+    <!-- Conditional content for 'my' route - Bima logo and navigation links -->
+    <div v-if="isMyRootRoute" class="flex items-center h-full truncate px-4 space-x-6">
+      <AppLink :to="{ name: 'my-home' }" class="flex items-center space-x-2.5">
+        <!-- Modified: Logo height increased by 40% of previous size -->
+        <BimaLogo class="h-[11.2px] w-auto" :theme="currentTheme" />
+      </AppLink>
+      <!-- Modified: Hidden on landing page -->
+      <AppLink v-if="route.name !== 'my-home'"
+               :to="{ name: 'my-home' }"
+               class="text-skin-link text-[19px] font-medium"
+               :class="{'font-semibold': route.name === 'my-home'}">
+        Home
+      </AppLink>
+      <!-- Modified: Hidden on landing page -->
+      <AppLink v-if="route.name !== 'my-home'"
+               :to="{ name: 'my-explore' }"
+               class="text-skin-link text-[19px] font-medium"
+               :class="{'font-semibold': route.name === 'my-explore'}">
+        Explore
+      </AppLink>
+      <!-- Disabled Docs link for 'my' root route -->
+      <AppLink to="#"
+               class="text-skin-link text-[19px] font-medium pointer-events-none opacity-50 cursor-not-allowed">
+        <IHDocumentText class="inline-block mr-2" /> Docs
+      </AppLink>
+    </div>
+
+    <!-- Conditional content for 'space' route - Space-specific navigation links -->
+    <div v-else-if="isSpaceRootRoute" class="flex items-center h-full truncate px-4 space-x-6">
+      <!-- Display BimaLogo if the current space is 'bima.eth' -->
+      <AppLink
+        v-if="isCurrentSpaceBimaEth"
+        :to="{ name: 'space-overview', params: { space: route.params.space } }"
+        class="flex items-center space-x-2.5 !mr-4"
+      >
+        <!-- Modified: Logo height increased by 40% of previous size -->
+        <BimaLogo class="h-[11.2px] w-auto" :theme="currentTheme" />
+      </AppLink>
+
+      <!-- Added: Home link for space views with icon -->
+      <AppLink :to="{ name: 'my-home' }"
+               class="text-skin-link text-[19px] font-medium"
+               :class="{'font-semibold': route.name === 'my-home'}">
+        <IHHome class="inline-block mr-2" /> Home
+      </AppLink>
+
+      <!-- Modified: Highlight with orange box when selected -->
+      <AppLink
+        :to="{ name: 'space-overview', params: { space: route.params.space } }"
+        :class="[
+          'text-[19px] font-medium transition-colors duration-200 ease-in-out',
+          route.name === 'space-overview'
+            ? 'bg-orange-500 text-white px-3 py-1 rounded-lg'
+            : 'text-skin-link'
+        ]"
+      >
+        <IH-globe-alt class="inline-block mr-2" /> Overview
+      </AppLink>
+      <!-- Modified: Highlight with orange box when selected -->
+      <AppLink
+        :to="{ name: 'space-proposals', params: { space: route.params.space } }"
+        :class="[
+          'text-[19px] font-medium transition-colors duration-200 ease-in-out',
+          route.name === 'space-proposals'
+            ? 'bg-orange-500 text-white px-3 py-1 rounded-lg'
+            : 'text-skin-link'
+        ]"
+      >
+        <IH-newspaper class="inline-block mr-2" /> Proposals
+      </AppLink>
+      <!-- Modified: Highlight with orange box when selected -->
+      <AppLink
+        :to="{ name: 'space-leaderboard', params: { space: route.params.space } }"
+        :class="[
+          'text-[19px] font-medium transition-colors duration-200 ease-in-out',
+          route.name === 'space-leaderboard'
+            ? 'bg-orange-500 text-white px-3 py-1 rounded-lg'
+            : 'text-skin-link'
+        ]"
+      >
+        <IH-user-group class="inline-block mr-2" /> Leaderboard
+      </AppLink>
+      <!-- Disabled Docs link for 'space' root route, hidden on 'overview', 'proposals', and 'leaderboard' -->
+      <AppLink
+        v-if="
+          route.name !== 'space-overview' &&
+          route.name !== 'space-proposals' &&
+          route.name !== 'space-leaderboard'
+        "
+        to="#"
+        class="text-skin-link text-[19px] font-medium pointer-events-none opacity-50 cursor-not-allowed"
+      >
+        <IHDocumentText class="inline-block mr-2" /> Docs
+      </AppLink>
+    </div>
+
+    <!-- Existing: Default app navigation for other routes (sidebar toggle, breadcrumb) -->
     <div
+      v-else
       class="flex items-center h-full truncate"
       :class="{
         'lg:border-r lg:pr-4 lg:w-[240px] shrink-0': hasAppNav,
@@ -108,6 +243,8 @@ onUnmounted(() => {
         ]"
       />
     </div>
+
+    <!-- Existing: Search form -->
     <form
       v-if="searchConfig"
       id="search-form"
@@ -127,24 +264,63 @@ onUnmounted(() => {
     </form>
 
     <div class="flex space-x-2 shrink-0">
-      <UiButton v-if="loading || web3.authLoading" loading />
+      <!-- Notifications button -->
       <UiButton
-        v-else
-        class="float-left !px-0 w-[46px] sm:w-auto sm:!px-3 text-center"
-        @click="modalAccountOpen = true"
+        v-if="web3.account"
+        class="!px-0 w-[46px] relative"
+        :class="{ 'text-skin-link': unreadNotificationsCount > 0 }"
+        @click="router.push({ name: 'my-notifications' })"
       >
-        <span v-if="web3.account" class="sm:flex items-center space-x-2">
-          <UiStamp :id="user.id" :size="18" :cb="cb" />
-          <span
-            class="hidden sm:block truncate max-w-[120px]"
-            v-text="user.name || shorten(user.id)"
-          />
-        </span>
-        <template v-else>
-          <span class="hidden sm:block" v-text="'Log in'" />
-          <IH-login class="sm:hidden inline-block" />
-        </template>
+        <IH-bell class="inline-block" />
+        <div
+          v-if="unreadNotificationsCount > 0"
+          class="absolute top-1 right-1 h-3 w-3 rounded-full bg-red-500 text-white text-xs flex items-center justify-center"
+        >
+          <span class="sr-only">{{ unreadNotificationsCount }} unread notifications</span>
+        </div>
       </UiButton>
+
+      <UiButton v-if="loading || web3.authLoading" loading />
+      <template v-else>
+        <!-- Display user account info if logged in with orange background and white text -->
+        <UiButton
+          v-if="web3.account"
+          style="background-color: #ec701a; color: white;"
+          class="float-left !px-0 w-[46px] sm:w-auto sm:!px-3 text-center"
+          @click="modalAccountOpen = true"
+        >
+          <span class="sm:flex items-center space-x-2">
+            <UiStamp :id="user.id" :size="18" :cb="cb" />
+            <span
+              class="hidden sm:block truncate max-w-[120px]"
+              v-text="user.name || shorten(user.id)"
+            />
+          </span>
+        </UiButton>
+        <!-- Modified: Display "Connect Wallet" button when not logged in AND on Bima DAO overview, proposals, or leaderboard pages -->
+        <UiButton
+          v-else-if="
+            !web3.account &&
+            isCurrentSpaceBimaEth &&
+            ['space-overview', 'space-proposals', 'space-leaderboard'].includes(route.name as string)
+          "
+          style="background-color: #ec701a; color: white;"
+          class="!px-3 sm:!px-4"
+          @click="modalAccountOpen = true"
+        >
+          <IHLink class="inline-block mr-2" /> Connect Wallet
+        </UiButton>
+        <!-- Display "Enter Governance Portal" button when not logged in AND NOT on Bima DAO overview, proposals, or leaderboard pages -->
+        <UiButton
+          v-else-if="!web3.account"
+          style="background-color: #ec701a; color: white;"
+          class="!px-3 sm:!px-4"
+          :to="{ name: 'space-overview', params: { space: BIMA_SPACE_KEY } }"
+        >
+          <IHDocumentText class="inline-block mr-2" />Governance Portal
+        </UiButton>
+      </template>
+
       <IndicatorPendingTransactions />
       <UiButton
         v-if="!isWhiteLabel"

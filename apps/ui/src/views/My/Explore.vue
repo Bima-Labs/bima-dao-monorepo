@@ -94,6 +94,14 @@ const networks = computed(() => {
   return [{ id: 'eth', name: 'Ethereum' }, ...protocolNetworks];
 });
 
+// Computed property to filter spaces for 'bima.eth'
+const filteredSpaces = computed(() => {
+  if (!data.value) return [];
+  // Flatten all pages and filter to only include 'bima.eth'
+  return data.value.pages.flat().filter(space => space.id === 'bima.eth');
+});
+
+
 function isValidNetwork(network: string): network is string {
   return network === 'all' || networks.value.some(n => n.id === network);
 }
@@ -165,7 +173,7 @@ watchEffect(() => setTitle('Explore'));
 
 <template>
   <div class="flex flex-col" style="min-height: calc(100vh - 72px)">
-    <OnboardingUser class="mb-2" />
+    <!-- <OnboardingUser class="mb-2" /> -->
     <div class="flex justify-between p-4 gap-2 gap-y-3 flex-row">
       <div class="flex sm:flex-row flex-col flex-wrap gap-2">
         <UiSelectDropdown
@@ -214,13 +222,13 @@ watchEffect(() => setTitle('Explore'));
       <UiLoading v-if="isPending" class="block m-4" />
       <div v-else-if="data">
         <UiContainerInfiniteScroll
-          v-if="data.pages.flat().length"
+          v-if="filteredSpaces.length"
           :loading-more="isFetchingNextPage"
           class="justify-center max-w-screen-md 2xl:max-w-screen-xl 3xl:max-w-screen-2xl mx-auto p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-explore-3 2xl:grid-cols-explore-4 3xl:grid-cols-explore-5 gap-3"
           @end-reached="handleEndReached"
         >
           <SpacesListItem
-            v-for="space in data.pages.flat()"
+            v-for="space in filteredSpaces"
             :key="space.id"
             :space="space"
           />
@@ -254,3 +262,4 @@ watchEffect(() => setTitle('Explore'));
     </UiToolbarBottom>
   </div>
 </template>
+

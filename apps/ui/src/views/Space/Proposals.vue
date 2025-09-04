@@ -116,7 +116,7 @@ watchEffect(() => setTitle(`Proposals - ${props.space.name}`));
 </script>
 
 <template>
-  <div>
+  <div class="w-4/5 mx-auto">
     <div
       class="flex justify-between p-4 gap-2 gap-y-3 flex-row"
       :class="{ 'flex-col-reverse sm:flex-row': space.labels?.length }"

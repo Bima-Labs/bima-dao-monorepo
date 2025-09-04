@@ -41,7 +41,8 @@ onUnmounted(() => notificationsStore.markAllAsRead());
 </script>
 
 <template>
-  <div>
+  <!-- Modified: Added max-w-[80%] and mx-auto to limit width and center content -->
+  <div class="max-w-[80%] mx-auto">
     <UiLabel :label="'Notifications'" sticky />
     <UiLoading v-if="notificationsStore.loading" class="block px-4 py-3" />
     <div v-else-if="filteredNotifications.length">
@@ -93,3 +94,4 @@ onUnmounted(() => notificationsStore.markAllAsRead());
     </div>
   </div>
 </template>
+
