@@ -133,8 +133,8 @@ onUnmounted(() => {
     <!-- Conditional content for 'my' route - Bima logo and navigation links -->
     <div v-if="isMyRootRoute" class="flex items-center h-full truncate px-4 space-x-6">
       <AppLink :to="{ name: 'my-home' }" class="flex items-center space-x-2.5">
-        <!-- Modified: Logo height changed to h-4, theme prop passed to BimaLogo -->
-        <BimaLogo class="h-4 w-auto" :theme="currentTheme" />
+        <!-- Modified: Logo height changed to 60% of original (h-[9.6px]) -->
+        <BimaLogo class="h-[9.6px] w-auto" :theme="currentTheme" />
       </AppLink>
       <!-- Modified: Hidden on landing page -->
       <AppLink v-if="route.name !== 'my-home'"
@@ -165,8 +165,8 @@ onUnmounted(() => {
         :to="{ name: 'space-overview', params: { space: route.params.space } }"
         class="flex items-center space-x-2.5 !mr-4"
       >
-        <!-- Modified: Logo height changed to h-4, theme prop passed to BimaLogo -->
-        <BimaLogo class="h-4 w-auto" :theme="currentTheme" />
+        <!-- Modified: Logo height changed to 60% of original (h-[9.6px]) -->
+        <BimaLogo class="h-[9.6px] w-auto" :theme="currentTheme" />
       </AppLink>
 
       <!-- Added: Home link for space views with icon -->
