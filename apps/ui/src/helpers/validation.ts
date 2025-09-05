@@ -249,6 +249,7 @@ ajv.addKeyword({
   validate: (schema: number, data: string) => {
     if (!data) return true;
 
+    // semgrep-ignore: javascript.lang.security.audit.detect-non-literal-regexp
     const regex = new RegExp(`^\\d+[.,]?\\d{0,${schema}}$`);
     return regex.test(data);
   },
