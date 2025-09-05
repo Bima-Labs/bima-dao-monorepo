@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'; // Import computed
 import { _n, autoLinkText, getSocialNetworksLink } from '@/helpers/utils';
 import { offchainNetworks } from '@/networks';
 import {
@@ -6,6 +7,7 @@ import {
   useProposalsSummaryQuery
 } from '@/queries/proposals';
 import { Space } from '@/types';
+import DOMPurify from 'dompurify'; // Import DOMPurify
 
 const props = defineProps<{ space: Space }>();
 
@@ -22,6 +24,14 @@ const { data, isPending, isError } = useProposalsSummaryQuery(
   toRef(() => props.space.network),
   toRef(() => props.space.id)
 );
+
+const sanitizedAboutHtml = computed(() => {
+  if (!props.space.about) return '';
+  const linkedText = autoLinkText(props.space.about);
+  // Sanitize the HTML output with DOMPurify to prevent XSS.
+  return DOMPurify.sanitize(linkedText);
+});
+
 
 const showChildren = computed(
   () =>
@@ -117,7 +127,7 @@ watchEffect(() => setTitle(props.space.name));
         <div
           v-if="space.about"
           class="max-w-[540px] text-skin-link text-md leading-[26px] mb-3 break-words"
-          v-html="autoLinkText(space.about)"
+          v-html="sanitizedAboutHtml"
         />
         <div v-if="socials.length > 0" class="space-x-2 flex">
           <template v-for="social in socials" :key="social.key">
