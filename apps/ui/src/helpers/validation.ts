@@ -11,10 +11,13 @@ import { _n } from './utils';
 type Opts = { skipEmptyOptionalFields: boolean };
 
 const ajv = new Ajv({
-  // Removed 'allErrors: true' to mitigate potential Denial of Service (DoS) vulnerabilities.
-  // By default, Ajv will stop after the first error, limiting resource consumption.
-  // If showing all errors is critical for UX, consider implementing a custom error handler
-  // with a limit on errors, or re-evaluate the impact in your specific environment.
+  // Re-enabled 'allErrors: true' as required by 'ajv-errors' plugin for correct functionality.
+  // semgrep-ignore: javascript.ajv.security.audit.ajv-allerrors-true.ajv-allerrors-true
+  // This setting might increase resource consumption with extremely malformed inputs (DoS risk),
+  // but it is a necessary trade-off for the desired error reporting functionality with 'ajv-errors'.
+  // Future consideration: If DoS becomes a proven issue, a custom error collection/limitation
+  // mechanism might be needed, or refactoring away from 'ajv-errors'.
+  allErrors: true,
   // https://github.com/ajv-validator/ajv/issues/1417
   strictTuples: false,
   allowUnionTypes: true
@@ -413,8 +416,7 @@ export const getValidator = (schema: any) => {
 
       if (!validate.errors) return {};
 
-      // With allErrors: true removed, validate.errors will only contain the first error.
-      // The getErrors function will still process it correctly.
+      // With allErrors: true re-enabled, validate.errors will contain all errors as expected.
       return getErrors(validate.errors);
     },
     validateAsync: async (
@@ -428,7 +430,7 @@ export const getValidator = (schema: any) => {
       } catch (e) {
         if (!(e instanceof Ajv.ValidationError)) throw e;
 
-        // With allErrors: true removed, e.errors will only contain the first error.
+        // With allErrors: true re-enabled, e.errors will contain all errors as expected.
         return getErrors(e.errors);
       }
     }
