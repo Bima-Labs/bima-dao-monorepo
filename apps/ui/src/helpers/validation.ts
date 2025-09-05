@@ -11,7 +11,10 @@ import { _n } from './utils';
 type Opts = { skipEmptyOptionalFields: boolean };
 
 const ajv = new Ajv({
-  allErrors: true,
+  // Removed 'allErrors: true' to mitigate potential Denial of Service (DoS) vulnerabilities.
+  // By default, Ajv will stop after the first error, limiting resource consumption.
+  // If showing all errors is critical for UX, consider implementing a custom error handler
+  // with a limit on errors, or re-evaluate the impact in your specific environment.
   // https://github.com/ajv-validator/ajv/issues/1417
   strictTuples: false,
   allowUnionTypes: true
@@ -387,6 +390,8 @@ export const getValidator = (schema: any) => {
 
       if (!validate.errors) return {};
 
+      // With allErrors: true removed, validate.errors will only contain the first error.
+      // The getErrors function will still process it correctly.
       return getErrors(validate.errors);
     },
     validateAsync: async (
@@ -400,6 +405,7 @@ export const getValidator = (schema: any) => {
       } catch (e) {
         if (!(e instanceof Ajv.ValidationError)) throw e;
 
+        // With allErrors: true removed, e.errors will only contain the first error.
         return getErrors(e.errors);
       }
     }
