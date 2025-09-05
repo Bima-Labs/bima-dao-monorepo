@@ -352,31 +352,53 @@ const getFormValues = (schema: any, form: any, opts: Opts) => {
   );
 };
 
+// Helper function to check for potentially malicious keys
+const isPotentiallyMaliciousKey = (key: string): boolean => {
+  return typeof key === 'string' && ['__proto__', 'constructor', 'prototype'].includes(key.toLowerCase());
+};
+
 const getErrors = (errors: Partial<ErrorObject>[]) => {
-  const output: Record<string, any> = {};
+  const output: Record<string, any> = Object.create(null); // Initialize with null prototype
 
   if (!errors) return output;
 
   for (const error of errors) {
     if (error.keyword === 'required' && error.params?.missingProperty) {
-      output[error.params.missingProperty] = 'Required field.';
+      const prop = String(error.params.missingProperty); // Ensure property is a string
+      if (isPotentiallyMaliciousKey(prop)) {
+        console.warn(`[Security] Attempted prototype pollution on required field: '${prop}'. Skipping.`);
+        continue; // Skip this error to prevent pollution
+      }
+      output[prop] = 'Required field.';
       continue;
     }
 
     if (!error.instancePath) continue;
 
-    const path = error.instancePath.split('/').slice(1);
-
+    const pathSegments = error.instancePath.split('/').slice(1);
     let current = output;
-    for (let i = 0; i < path.length - 1; i++) {
-      const subpath = path[i];
-      if (typeof current[subpath] !== 'object' || current[subpath] === null) {
-        current[subpath] = {};
-      }
-      current = current[subpath];
-    }
 
-    current[path[path.length - 1]] = getErrorMessage(error);
+    for (let i = 0; i < pathSegments.length; i++) {
+      const segment = pathSegments[i];
+
+      if (isPotentiallyMaliciousKey(segment)) {
+        console.warn(`[Security] Attempted prototype pollution on path segment: '${segment}'. Stopping processing this error path.`);
+        current = Object.create(null); // Sever the path to prevent further pollution
+        break;
+      }
+
+      if (i < pathSegments.length - 1) { // Intermediate path segment
+        // If the property does not exist, or is not an object (null is also not an object in this context),
+        // or if it's an object but not explicitly created with Object.create(null) (i.e., has a prototype chain),
+        // then we replace it with a new Object.create(null).
+        if (current[segment] === null || typeof current[segment] !== 'object' || Object.getPrototypeOf(current[segment]) !== null) {
+          current[segment] = Object.create(null);
+        }
+        current = current[segment];
+      } else { // Last path segment
+        current[segment] = getErrorMessage(error);
+      }
+    }
   }
 
   return output;
