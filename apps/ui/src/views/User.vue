@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'; // Import computed
 import { useQueryClient } from '@tanstack/vue-query';
 import { getUserStats } from '@/helpers/efp';
 import {
@@ -14,6 +15,7 @@ import { addressValidator as isValidAddress } from '@/helpers/validation';
 import { enabledNetworks, getNetwork } from '@/networks';
 import { getSpaces } from '@/queries/spaces';
 import { Space, UserActivity } from '@/types';
+import DOMPurify from 'dompurify'; // Import DOMPurify
 
 const queryClient = useQueryClient();
 const route = useRoute();
@@ -47,6 +49,14 @@ const user = computed(() => usersStore.getUser(id.value));
 const socials = computed(() => getSocialNetworksLink(user.value));
 
 const cb = computed(() => getCacheHash(user.value?.avatar));
+
+const sanitizedAboutHtml = computed(() => {
+  if (!user.value?.about) return '';
+  const linkedText = autoLinkText(user.value.about);
+  // Sanitize the HTML output with DOMPurify to prevent XSS.
+  return DOMPurify.sanitize(linkedText);
+});
+
 
 async function loadUserMetadata(userId: string) {
   userMetadata.loading = true;
@@ -224,7 +234,7 @@ watchEffect(() => setTitle(`${user.value?.name || id.value} user profile`));
         <div
           v-if="user.about"
           class="max-w-[540px] text-skin-link text-md leading-[26px] mb-3 break-words"
-          v-html="autoLinkText(user.about)"
+          v-html="sanitizedAboutHtml"
         />
         <div v-if="socials.length" class="space-x-2 flex">
           <template v-for="social in socials" :key="social.key">

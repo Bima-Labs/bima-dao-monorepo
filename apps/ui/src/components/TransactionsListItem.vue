@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { computed } from 'vue'; // Import computed
 import { formatUnits } from '@ethersproject/units';
 import { getGenericExplorerUrl } from '@/helpers/generic';
 import { getNames } from '@/helpers/stamp';
 import { _n, shorten } from '@/helpers/utils';
 import { ChainId, Transaction } from '@/types';
+import DOMPurify from 'dompurify'; // Import DOMPurify
 
 const props = defineProps<{ chainId: ChainId; tx: Transaction }>();
 
@@ -145,9 +147,14 @@ const parsedTitle = computedAsync(
     const names = await getNames([recipient]);
     const name = names[recipient] || shorten(recipient);
 
-    return title.value.replace('_NAME_', name);
+    const titleHtml = title.value.replace('_NAME_', name);
+    // Sanitize the dynamically generated HTML with DOMPurify to prevent XSS
+    return DOMPurify.sanitize(titleHtml);
   },
-  title.value.replace('_NAME_', shorten(props.tx._form.recipient))
+  () => { // Provide a function for the default value
+    const titleHtml = title.value.replace('_NAME_', shorten(props.tx._form.recipient));
+    return DOMPurify.sanitize(titleHtml);
+  }
 );
 </script>
 

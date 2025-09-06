@@ -91,7 +91,7 @@ export const createNetworkHandler = (chainId: number) => {
       const { space, proposalId } = params;
 
       const response = await fetch(
-        'http://ec2-44-197-171-215.compute-1.amazonaws.com:8000/query',
+        'https://ec2-44-197-171-215.compute-1.amazonaws.com:8000/query',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

@@ -748,7 +748,8 @@ export function getSocialNetworksLink(data: any) {
   ]
     .map(({ key, icon, urlFormat }) => {
       const value = data[key];
-      const href = value ? sanitizeUrl(urlFormat.replace('$', value)) : null;
+      // Use a regex with the global flag to ensure all occurrences of '$' are replaced.
+      const href = value ? sanitizeUrl(urlFormat.replace(/\$/g, value)) : null;
 
       return href ? { key, icon, href } : {};
     })
