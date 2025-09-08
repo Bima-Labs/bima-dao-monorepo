@@ -143,8 +143,8 @@ onUnmounted(() => {
                :class="{'font-semibold': route.name === 'my-home'}">
         Home
       </AppLink>
-      <!-- Modified: Hidden on landing page -->
-      <AppLink v-if="route.name !== 'my-home'"
+      <!-- Modified: Hidden on landing page, and now also hidden when on notifications page -->
+      <AppLink v-if="route.name !== 'my-home' && route.name !== 'my-notifications'"
                :to="{ name: 'my-explore' }"
                class="text-skin-link text-[19px] font-medium"
                :class="{'font-semibold': route.name === 'my-explore'}">
@@ -347,3 +347,4 @@ onUnmounted(() => {
   color: rgba(var(--link));
 }
 </style>
+
