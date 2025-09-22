@@ -13,6 +13,7 @@ import { _n } from '@/helpers/utils'; // New: Import _n for number formatting
 import IHSparkles from '~icons/heroicons-outline/sparkles';
 import IHPlusSm from '~icons/heroicons-outline/plus-sm';
 import IHDocumentText from '~icons/heroicons-outline/document-text';
+import IHArrowRight from '~icons/heroicons-outline/arrow-right'; // New: Import Arrow Right Icon
 
 
 // const selectIconBaseProps = { // No longer needed
@@ -166,6 +167,15 @@ const {
           <p class="text-gray-600 text-sm">Approved proposals are then implemented by the Bima DAO team or community developers, bringing collective decisions to life and shaping our future.</p>
         </div>
       </div>
+    </div>
+
+    <!-- "Ready to Get Started?" Footer Section -->
+    <div class="mt-20 mb-12 w-4/5 mx-auto text-center py-16 px-4 rounded-3xl pt-5 pb-5" style="background-color: #F06C1A;">
+      <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">Ready to Get Started?</h2>
+      <p class="text-lg text-white mb-8 max-w-[600px] mx-auto">
+       Join the Bima DAO and experience trusted decentralized finance solutions
+      </p>
+     
     </div>
   </div>
 </template>
