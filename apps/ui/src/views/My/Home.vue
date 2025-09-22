@@ -95,51 +95,77 @@ const {
 </script>
 
 <template>
-  <div class="max-w-[800px] mx-auto text-center px-4 py-8">
-    <h1 class="text-4xl md:text-5xl font-bold mb-4">Bima DAO Governance</h1>
-    <p class="text-lg text-gray-700 mb-8 max-w-[600px] mx-auto">
-      Join the sustainable blockchain revolution. Vote on proposals, shape our green future, and help build a carbon-neutral decentralized ecosystem.
-    </p>
+  <div>
+    <div class="max-w-[800px] mx-auto text-center px-4 py-8">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">Bima DAO Governance</h1>
+      <p class="text-lg text-gray-700 mb-8 max-w-[600px] mx-auto">
+        Join the sustainable blockchain revolution. Vote on proposals, shape our green future, and help build a carbon-neutral decentralized ecosystem.
+      </p>
 
-    <div class="flex justify-center space-x-4 mb-12">
-      <!-- Changed "View Proposals" button to orange, retaining white text -->
-      <UiButton style="background-color: #ec701a; color: white;" :to="{ name: 'space-proposals', params: { space: BIMA_SPACE_KEY } }">
-        <IHSparkles class="inline-block mr-2" /> View Proposals
-      </UiButton>
-      <!-- Reverted "Create Proposal" button to default white background, black text as per image -->
-      <UiButton :to="{ name: 'space-editor', params: { space: BIMA_SPACE_KEY, key: 'new' } }">
-        <IHPlusSm class="inline-block mr-2" /> Create Proposal
-      </UiButton>
+      <div class="flex justify-center space-x-4 mb-12">
+        <!-- Changed "View Proposals" button to orange, retaining white text -->
+        <UiButton style="background-color: #ec701a; color: white;" :to="{ name: 'space-proposals', params: { space: BIMA_SPACE_KEY } }">
+          <IHSparkles class="inline-block mr-2" /> View Proposals
+        </UiButton>
+        <!-- Reverted "Create Proposal" button to default white background, black text as per image -->
+        <UiButton :to="{ name: 'space-editor', params: { space: BIMA_SPACE_KEY, key: 'new' } }">
+          <IHPlusSm class="inline-block mr-2" /> Create Proposal
+        </UiButton>
+      </div>
+
+      <!-- Modified: Removed outer card classes and added top margin for spacing -->
+      <div v-if="bimaSpace" class="mt-8">
+      
+
+        <!-- Stat cards grid, still centered -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-6">
+          <div class="bg-white rounded-xl shadow p-4 border border-skin-border flex flex-col justify-center items-center">
+            <p class="text-3xl font-bold" style="color: #ec701a;">{{ _n(bimaSpace.follower_count || 2847) }}</p> <!-- Use space data or fallback -->
+            <p class="text-sm text-gray-500">Members (Static)</p>
+          </div>
+          <div class="bg-white rounded-xl shadow p-4 border border-skin-border flex flex-col justify-center items-center">
+            <p class="text-3xl font-bold" style="color: #ec701a;">{{ _n(bimaSpace.active_proposals || 0) }}</p> <!-- Use space data or fallback -->
+            <p class="text-sm text-gray-500">Active Proposals</p>
+          </div>
+          <div class="bg-white rounded-xl shadow p-4 border border-skin-border flex flex-col justify-center items-center">
+            <p class="text-3xl font-bold" style="color: #ec701a;">{{ _n(bimaSpace.proposal_count || 15) }}</p> <!-- Use space data or fallback -->
+            <p class="text-sm text-gray-500">Total Proposals</p>
+          </div>
+          <div class="bg-white rounded-xl shadow p-4 border border-skin-border flex flex-col justify-center items-center">
+            <p class="text-3xl font-bold" style="color: #ec701a;">$2.4M</p> <!-- Hardcoded as per image -->
+            <p class="text-sm text-gray-500">Treasury (Static)</p>
+          </div>
+        </div>
+      </div>
+      <UiLoading v-else-if="isSpaceLoading" class="mt-8" />
+      <UiAlert v-else-if="isSpaceError" type="error" class="mt-8">
+        Failed to load Bima DAO space data.
+      </UiAlert>
     </div>
 
-    <!-- Modified: Removed outer card classes and added top margin for spacing -->
-    <div v-if="bimaSpace" class="mt-8">
-     
-
-      <!-- Stat cards grid, still centered -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-6">
-        <div class="bg-white rounded-xl shadow p-4 border border-skin-border flex flex-col justify-center items-center">
-          <p class="text-3xl font-bold" style="color: #ec701a;">{{ _n(bimaSpace.follower_count || 2847) }}</p> <!-- Use space data or fallback -->
-          <p class="text-sm text-gray-500">Members (Static)</p>
+    <!-- "How it Works" Section for Snapshot DAO - Now wider and centered -->
+    <div class="w-4/5 mx-auto text-center mt-16 mb-12 px-4">
+      <h2 class="text-3xl font-bold mb-8" style="color: #ec701a;">How it Works</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Step 1: Create a Proposal -->
+        <div class="bg-white rounded-xl shadow py-6 px-8 border border-skin-border flex flex-col items-center">
+          <IHDocumentText class="w-14 h-14 mb-4" style="color: #ec701a;" />
+          <h3 class="text-xl font-semibold mb-2" style="color: #ec701a;">1. Create a Proposal</h3>
+          <p class="text-gray-600 text-sm">Anyone can propose ideas for the Bima DAO. Draft a clear proposal outlining your vision, goals, and implementation plan for community review.</p>
         </div>
-        <div class="bg-white rounded-xl shadow p-4 border border-skin-border flex flex-col justify-center items-center">
-          <p class="text-3xl font-bold" style="color: #ec701a;">{{ _n(bimaSpace.active_proposals || 0) }}</p> <!-- Use space data or fallback -->
-          <p class="text-sm text-gray-500">Active Proposals</p>
+        <!-- Step 2: Discuss & Vote -->
+        <div class="bg-white rounded-xl shadow py-6 px-8 border border-skin-border flex flex-col items-center">
+          <IHSparkles class="w-14 h-14 mb-4" style="color: #ec701a;" />
+          <h3 class="text-xl font-semibold mb-2" style="color: #ec701a;">2. Discuss & Vote</h3>
+          <p class="text-gray-600 text-sm">Community members discuss proposals, provide feedback, and then cast their votes using their Bima tokens. Majority rules to ensure fair governance.</p>
         </div>
-        <div class="bg-white rounded-xl shadow p-4 border border-skin-border flex flex-col justify-center items-center">
-          <p class="text-3xl font-bold" style="color: #ec701a;">{{ _n(bimaSpace.proposal_count || 15) }}</p> <!-- Use space data or fallback -->
-          <p class="text-sm text-gray-500">Total Proposals</p>
-        </div>
-        <div class="bg-white rounded-xl shadow p-4 border border-skin-border flex flex-col justify-center items-center">
-          <p class="text-3xl font-bold" style="color: #ec701a;">$2.4M</p> <!-- Hardcoded as per image -->
-          <p class="text-sm text-gray-500">Treasury (Static)</p>
+        <!-- Step 3: Implement Decisions -->
+        <div class="bg-white rounded-xl shadow py-6 px-8 border border-skin-border flex flex-col items-center">
+          <IHPlusSm class="w-14 h-14 mb-4" style="color: #ec701a;" />
+          <h3 class="text-xl font-semibold mb-2" style="color: #ec701a;">3. Implement Decisions</h3>
+          <p class="text-gray-600 text-sm">Approved proposals are then implemented by the Bima DAO team or community developers, bringing collective decisions to life and shaping our future.</p>
         </div>
       </div>
     </div>
-    <UiLoading v-else-if="isSpaceLoading" class="mt-8" />
-    <UiAlert v-else-if="isSpaceError" type="error" class="mt-8">
-      Failed to load Bima DAO space data.
-    </UiAlert>
   </div>
 </template>
-
