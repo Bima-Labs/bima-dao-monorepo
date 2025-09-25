@@ -9,6 +9,7 @@ import { solidity } from 'highlightjs-solidity';
 import { Remarkable } from 'remarkable';
 import { linkify } from 'remarkable/linkify';
 import { getUrl } from '@/helpers/utils';
+import DOMPurify from 'dompurify'; // Import DOMPurify
 
 hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('json', json);
@@ -25,7 +26,7 @@ const { copy } = useClipboard();
 const selfRef = ref<HTMLDivElement>();
 
 const remarkable = new Remarkable({
-  html: false,
+  html: false, // Ensures raw HTML input is not parsed by Remarkable
   breaks: true,
   typographer: false,
   linkTarget: '_blank',
@@ -78,7 +79,13 @@ const parsed = computed(() => {
     value => getUrl(value) || '#'
   );
 
-  return remarkable.render(formattedBody);
+  // Render markdown to HTML
+  const renderedHtml = remarkable.render(formattedBody);
+
+  // Sanitize the HTML output with DOMPurify to prevent XSS.
+  // This is crucial even if the markdown parser attempts to be safe,
+  // as an extra layer of defense against sophisticated attacks.
+  return DOMPurify.sanitize(renderedHtml);
 });
 
 onMounted(() => {
@@ -88,18 +95,20 @@ onMounted(() => {
     const parent = code.parentElement!;
 
     const copyButton = document.createElement('button');
+    // Ensure that SVG is also sanitized if it comes from an untrusted source,
+    // though here `icons.icons.duplicate.body` is an internal trusted source.
     const copySvg = `<svg viewBox="0 0 24 24" width="20px" height="20px">${icons.icons.duplicate.body}</svg>`;
     copyButton.classList.add('text-skin-text');
     copyButton.setAttribute('type', 'button');
-    copyButton.innerHTML = copySvg;
+    copyButton.innerHTML = copySvg; // This is safe because copySvg is from a trusted source
     copyButton.addEventListener('click', () => {
       if (parent !== null) {
         copy(code.textContent!);
 
-        copyButton.innerHTML = `<svg viewBox="0 0 24 24" width="20px" height="20px">${icons.icons.check.body}</svg>`;
+        copyButton.innerHTML = `<svg viewBox="0 0 24 24" width="20px" height="20px">${icons.icons.check.body}</svg>`; // Trusted source
         copyButton.classList.add('!text-skin-success');
         setTimeout(() => {
-          copyButton.innerHTML = copySvg;
+          copyButton.innerHTML = copySvg; // Trusted source
           copyButton.classList.remove('!text-skin-success');
         }, 1000);
       }
@@ -109,7 +118,9 @@ onMounted(() => {
     titleBar.classList.add('title-bar');
 
     const language = document.createElement('div');
-    language.innerHTML =
+    // Ensure `code.getAttribute('class')` is treated as plain text or further sanitized if it could contain user input.
+    // For `language-` classes, it's generally safe.
+    language.textContent =
       code.getAttribute('class')?.split('language-')[1] || '';
 
     titleBar.append(language);

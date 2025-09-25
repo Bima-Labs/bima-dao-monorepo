@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'; // Import computed
 import {
   _vp,
   autoLinkText,
@@ -10,6 +11,7 @@ import { addressValidator as isValidAddress } from '@/helpers/validation';
 import { getNetwork } from '@/networks';
 import { VotingPower, VotingPowerStatus } from '@/networks/types';
 import { Space, UserActivity } from '@/types';
+import DOMPurify from 'dompurify'; // Import DOMPurify
 
 const props = defineProps<{ space: Space }>();
 
@@ -55,6 +57,14 @@ const formattedVotingPower = computed(() => {
 
   return votingPower;
 });
+
+const sanitizedAboutHtml = computed(() => {
+  if (!user.value?.about) return '';
+  const linkedText = autoLinkText(user.value.about);
+  // Sanitize the HTML output with DOMPurify to prevent XSS.
+  return DOMPurify.sanitize(linkedText);
+});
+
 
 const navigation = computed(() => [
   { label: 'Statement', route: 'space-user-statement' },
@@ -237,7 +247,7 @@ watch(
         <div
           v-if="user.about"
           class="max-w-[540px] text-skin-link text-md leading-[26px] mb-3 break-words"
-          v-html="autoLinkText(user.about)"
+          v-html="sanitizedAboutHtml"
         />
         <div v-if="socials.length" class="space-x-2 flex">
           <template v-for="social in socials" :key="social.key">

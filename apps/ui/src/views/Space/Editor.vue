@@ -10,6 +10,7 @@ import { getNetwork, offchainNetworks } from '@/networks';
 import { PROPOSALS_KEYS } from '@/queries/proposals';
 import { usePropositionPowerQuery } from '@/queries/propositionPower';
 import { Contact, Space, Transaction, VoteType } from '@/types';
+import DOMPurify from 'dompurify'; // Import DOMPurify
 
 const DEFAULT_VOTING_DELAY = 60 * 60 * 24 * 3;
 
@@ -70,6 +71,11 @@ const nonPremiumNetworksList = computed(() => {
   if (!networks) return '';
   const boldNames = networks.map((n: any) => `<b>${n.name}</b>`);
   return prettyConcat(boldNames, 'and');
+});
+
+const sanitizedNonPremiumNetworksList = computed(() => {
+  // Sanitize the HTML output with DOMPurify to prevent XSS.
+  return DOMPurify.sanitize(nonPremiumNetworksList.value);
 });
 
 const privacy = computed({
@@ -433,8 +439,6 @@ watch(
 );
 
 watchEffect(() => {
-  if (!proposal.value) return;
-
   const hasOSnap = editorExecutions.value.find(
     strategy => strategy.type === 'oSnap' && strategy.transactions.length > 0
   );
@@ -510,7 +514,7 @@ watchEffect(() => {
             class="mb-4"
           >
             You cannot create proposals. This space is configured with
-            non-premium networks (<span v-html="nonPremiumNetworksList" />).
+            non-premium networks (<span v-html="sanitizedNonPremiumNetworksList" />).
             Change to a
             <AppLink
               to="https://help.snapshot.box/en/articles/10478752-what-are-the-premium-networks"
